@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "jetbrains": {
+      "command": "npx",
+      "args": ["-y", "@jetbrains/mcp-proxy"]
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://localhost:5432/pokemon_tcg"
+      ]
+    },
+    "jira": {
+      "command": "npx",
+      "args": ["-y", "mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "https://pokemontcg.atlassian.net",
+        "JIRA_USERNAME": "TU_EMAIL@ejemplo.com",
+        "JIRA_API_TOKEN": "TU_TOKEN_DE_JIRA"
+      }
+    }
+  }
+}

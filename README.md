@@ -5,9 +5,27 @@ Juego de cartas Pokemon TCG digital con partidas en tiempo real.
 
 ---
 
+## Setup rápido (después de clonar)
+
+Una vez que tenés instalado Java, Maven, Node.js y PostgreSQL, ejecutá el script de setup que hace el resto automáticamente:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup.ps1
+```
+
+El script verifica las instalaciones, crea la base de datos `pokemon_tcg`, copia el template de `.mcp.json`, y configura las variables de entorno interactivamente.
+
+Si preferís hacerlo con Claude Code (necesitás tenerlo instalado primero):
+```
+claude
+# Luego decirle: "verificá mi entorno con setup-runner"
+```
+
+---
+
 ## Requisitos previos
 
-Instalá todo esto antes de clonar el proyecto.
+Instalá todo esto antes de clonar el proyecto. Solo necesitás hacerlo una vez.
 
 ### 1. Java 23 JDK
 
@@ -108,37 +126,16 @@ Si falla por versión de Java, asegurate de que `JAVA_HOME` apunta al JDK 23.
 
 ### 3. Crear el archivo `.mcp.json` (configuración local de Claude Code)
 
-Este archivo **no está en el repositorio** porque contiene credenciales personales. Cada uno lo crea en la raíz del proyecto.
+Este archivo **no está en el repositorio** porque contiene credenciales personales. El repositorio incluye `mcp.example.json` como plantilla:
 
-Creá el archivo `PokemonTCG/.mcp.json` con este contenido (reemplazando los valores):
-
-```json
-{
-  "mcpServers": {
-    "jetbrains": {
-      "command": "npx",
-      "args": ["-y", "@jetbrains/mcp-proxy"]
-    },
-    "postgres": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-postgres",
-        "postgresql://localhost:5432/pokemon_tcg"
-      ]
-    },
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "mcp-atlassian"],
-      "env": {
-        "JIRA_URL": "https://pokemontcg.atlassian.net",
-        "JIRA_USERNAME": "TU_EMAIL@ejemplo.com",
-        "JIRA_API_TOKEN": "TU_TOKEN_DE_JIRA"
-      }
-    }
-  }
-}
+```powershell
+# Copiar la plantilla (el script setup.ps1 hace esto automáticamente)
+Copy-Item mcp.example.json .mcp.json
 ```
+
+Luego abrí `.mcp.json` y reemplazá:
+- `TU_EMAIL@ejemplo.com` → tu email de Atlassian
+- `TU_TOKEN_DE_JIRA` → tu API token de Jira
 
 **Cómo obtener tu token de Jira:**
 1. Entrá a [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
