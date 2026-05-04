@@ -5,187 +5,107 @@ Juego de cartas Pokemon TCG digital con partidas en tiempo real.
 
 ---
 
-## Setup rápido (después de clonar)
+## Instalación (paso a paso)
 
-Una vez que tenés instalado Java, Maven, Node.js y PostgreSQL, ejecutá el script de setup que hace el resto automáticamente:
+### Paso 1 — Instalar las dependencias del sistema
+
+Estas cuatro herramientas requieren instalación manual antes de cualquier otra cosa:
+
+| Herramienta | Versión mínima | Descarga |
+|---|---|---|
+| Java JDK | 23 | [Eclipse Temurin 23](https://adoptium.net/temurin/releases/?version=23) |
+| Maven | 3.9+ | [maven.apache.org](https://maven.apache.org/download.cgi) · [guía](https://maven.apache.org/install.html) |
+| Node.js | 20+ | [nodejs.org](https://nodejs.org/) |
+| PostgreSQL | 16+ | [postgresql.org](https://www.postgresql.org/download/) |
+
+También necesitás:
+- **Git** — [git-scm.com](https://git-scm.com/downloads)
+- **IntelliJ IDEA** — [jetbrains.com/idea](https://www.jetbrains.com/idea/download/) (Community Edition alcanza)
+- **Claude Code CLI** — `npm install -g @anthropic-ai/claude-code` (necesita cuenta en [claude.ai](https://claude.ai))
+
+Verificá que quedaron bien antes de continuar:
+```powershell
+java -version   # openjdk version "23"
+mvn -version    # Apache Maven 3.9.x
+node -v         # v20.x o superior
+psql --version  # psql (PostgreSQL) 16.x
+```
+
+---
+
+### Paso 2 — Clonar el repositorio
+
+```powershell
+git clone https://github.com/113839EC/PokemonTCG.git
+cd PokemonTCG
+```
+
+---
+
+### Paso 3 — Ejecutar el script de setup
+
+El script verifica las instalaciones, crea la base de datos, copia el template de `.mcp.json`, y configura las variables de entorno interactivamente:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
-El script verifica las instalaciones, crea la base de datos `pokemon_tcg`, copia el template de `.mcp.json`, y configura las variables de entorno interactivamente.
-
-Si preferís hacerlo con Claude Code (necesitás tenerlo instalado primero):
-```
-claude
-# Luego decirle: "verificá mi entorno con setup-runner"
-```
+Al terminar el script, **cerrá y volvé a abrir la terminal** para que las variables de entorno surtan efecto.
 
 ---
 
-## Requisitos previos
+### Paso 4 — Completar `.mcp.json` con tus credenciales
 
-Instalá todo esto antes de clonar el proyecto. Solo necesitás hacerlo una vez.
+El script ya copió `mcp.example.json` como `.mcp.json`. Solo falta reemplazar tus datos de Jira:
 
-### 1. Java 23 JDK
-
-Descargá e instalá [Eclipse Temurin 23](https://adoptium.net/temurin/releases/?version=23) (recomendado) o cualquier JDK 23.
-
-Verificá que quedó bien:
-```
-java -version
-# debe mostrar: openjdk version "23"
+```json
+"JIRA_USERNAME": "tu-email@ejemplo.com",
+"JIRA_API_TOKEN": "tu-token-aqui"
 ```
 
-### 2. Maven 3.9+
+**Cómo obtener tu token de Jira:**
+1. Entrá a [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Creá un token nuevo con el nombre "PokemonTCG"
+3. Copiá el valor y pegalo en el campo `JIRA_API_TOKEN`
 
-Descargá desde [maven.apache.org](https://maven.apache.org/download.cgi) y seguí la [guía de instalación](https://maven.apache.org/install.html).
-
-Verificá:
-```
-mvn -version
-# debe mostrar: Apache Maven 3.9.x
-```
-
-### 3. Node.js 20+
-
-Descargá desde [nodejs.org](https://nodejs.org/). Necesario para los servidores MCP (herramientas de Claude Code).
-
-Verificá:
-```
-node -v   # v20.x o superior
-npm -v    # incluido con Node
-```
-
-### 4. PostgreSQL 16+
-
-Descargá e instalá desde [postgresql.org](https://www.postgresql.org/download/).
-
-Durante la instalación:
-- Puerto: `5432` (default)
-- Usuario superadmin: `postgres`
-- Anotá la contraseña que le ponés
-
-Luego creá la base de datos del proyecto. Abrí una terminal y ejecutá:
-
-```
-psql -U postgres -c "CREATE DATABASE pokemon_tcg;"
-```
-
-Verificá que se creó:
-```
-psql -U postgres -c "\l" | grep pokemon_tcg
-```
-
-### 5. Git
-
-Si no lo tenés: [git-scm.com](https://git-scm.com/downloads)
-
-```
-git --version
-```
-
-### 6. IntelliJ IDEA (recomendado)
-
-[jetbrains.com/idea](https://www.jetbrains.com/idea/download/) — Community Edition es suficiente.
-Configurá el SDK del proyecto apuntando al JDK 23 instalado en el paso 1.
-
-### 7. Claude Code CLI
-
-Necesario para usar los agentes del proyecto (asistentes de IA especializados).
-
-```
-npm install -g @anthropic-ai/claude-code
-```
-
-Verificá:
-```
-claude --version
-```
-
-Necesitás una cuenta en [claude.ai](https://claude.ai) y seguir el proceso de login con `claude`.
+**Cómo obtener tu GitHub Personal Access Token** (si el script lo pidió y no lo tenías):
+1. GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate new token → scopes mínimos: `repo`, `read:org`
+3. El token empieza con `ghp_`
 
 ---
 
-## Clonar y configurar el proyecto
+### Paso 5 — Verificar que compila
 
-### 1. Clonar el repositorio
-
-```
-git clone https://github.com/113839EC/PokemonTCG.git
-cd PokemonTCG
-```
-
-### 2. Verificar que Maven puede compilar
-
-```
+```powershell
 mvn clean compile
 ```
 
 Si falla por versión de Java, asegurate de que `JAVA_HOME` apunta al JDK 23.
 
-### 3. Crear el archivo `.mcp.json` (configuración local de Claude Code)
+---
 
-Este archivo **no está en el repositorio** porque contiene credenciales personales. El repositorio incluye `mcp.example.json` como plantilla:
+### Paso 6 — Abrir con Claude Code (opcional pero recomendado)
 
 ```powershell
-# Copiar la plantilla (el script setup.ps1 hace esto automáticamente)
-Copy-Item mcp.example.json .mcp.json
+claude
 ```
 
-Luego abrí `.mcp.json` y reemplazá:
-- `TU_EMAIL@ejemplo.com` → tu email de Atlassian
-- `TU_TOKEN_DE_JIRA` → tu API token de Jira
-
-**Cómo obtener tu token de Jira:**
-1. Entrá a [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
-2. Creá un nuevo token con el nombre "PokemonTCG"
-3. Copiá el token y pegalo en el campo `JIRA_API_TOKEN`
-
-### 4. Configurar variables de entorno
-
-El archivo `.claude/settings.json` usa estas variables de entorno para los MCPs de GitHub y PostgreSQL.
-
-**En Windows (PowerShell como administrador, permanente):**
-```powershell
-[System.Environment]::SetEnvironmentVariable("GITHUB_PERSONAL_ACCESS_TOKEN", "ghp_TU_TOKEN_AQUI", "User")
-[System.Environment]::SetEnvironmentVariable("DATABASE_URL", "postgresql://postgres:TU_CONTRASEÑA@localhost:5432/pokemon_tcg", "User")
+Si querés que el agente verifique que todo quedó bien:
 ```
-
-Cerrá y volvé a abrir la terminal para que las variables surtan efecto.
-
-**Cómo obtener tu GitHub Personal Access Token:**
-1. GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Generate new token → clásico
-3. Scopes mínimos: `repo`, `read:org`
-4. Copiá el token (empieza con `ghp_`)
-
-**Verificar que las variables están:**
-```powershell
-echo $env:DATABASE_URL
-echo $env:GITHUB_PERSONAL_ACCESS_TOKEN
+verificá mi entorno con el agente setup-runner
 ```
 
 ---
 
 ## Comandos útiles
 
-```bash
-# Compilar
-mvn clean compile
-
-# Ejecutar tests (cuando haya tests implementados)
-mvn test
-
-# Generar reporte de cobertura JaCoCo
-mvn verify
-# El reporte queda en: target/site/jacoco/index.html
-
-# Construir JAR ejecutable
-mvn package
-
-# Ejecutar la app (cuando esté configurado el main)
-mvn spring-boot:run
+```powershell
+mvn clean compile          # compilar
+mvn test                   # correr tests
+mvn verify                 # tests + reporte JaCoCo (en target/site/jacoco/index.html)
+mvn package                # construir JAR
+mvn spring-boot:run        # ejecutar la app (cuando esté configurado)
 ```
 
 ---
@@ -196,16 +116,18 @@ mvn spring-boot:run
 PokemonTCG/
 ├── src/
 │   ├── main/java/org/example/
-│   │   ├── api/          # Controllers REST + WebSocket
-│   │   ├── application/  # Servicios y casos de uso
-│   │   ├── domain/       # Game Engine (lógica pura sin Spring)
-│   │   ├── infrastructure/ # JPA, repositorios, cliente externo
-│   │   └── config/       # Configuración Spring (WebSocket, Security)
+│   │   ├── api/              # Controllers REST + WebSocket handlers
+│   │   ├── application/      # Servicios y casos de uso
+│   │   ├── domain/           # Game Engine (lógica pura sin Spring)
+│   │   ├── infrastructure/   # JPA, repositorios, cliente pokemontcg.io
+│   │   └── config/           # Configuración Spring (WebSocket, Security)
 │   └── main/resources/
-│       └── db/migration/ # Migraciones Flyway (V1 a V6)
+│       └── db/migration/     # Migraciones Flyway (V1__...sql a V6__...sql)
 ├── .claude/
-│   └── agents/           # Agentes de IA especializados por dominio
-├── .mcp.json             # NO en git — configuración local de MCPs
+│   └── agents/               # Agentes de IA especializados por dominio
+├── .mcp.json                 # NO está en git — credenciales personales
+├── mcp.example.json          # Template para crear .mcp.json
+├── setup.ps1                 # Script de configuración del entorno local
 ├── pom.xml
 └── README.md
 ```
@@ -214,27 +136,22 @@ PokemonTCG/
 
 ## Agentes de Claude Code
 
-El proyecto incluye agentes especializados en `.claude/agents/`. Cuando abrís el proyecto con `claude` en la terminal, estos agentes se activan automáticamente según el contexto.
+Los agentes en `.claude/agents/` se activan automáticamente cuando abrís el proyecto con `claude`. Cada uno tiene contexto embebido del dominio que cubre.
 
 | Agente | Cuándo se usa |
 |---|---|
-| `pokemon-rules` | Reglamento XY1, mecánicas del juego |
-| `backend-architect` | Spring Boot, Game Engine, patrones de diseño |
-| `db-designer` | Esquema PostgreSQL, migraciones Flyway |
-| `test-coach` | JUnit, Mockito, JaCoCo, cobertura de tests |
-| `frontend-dev` | Angular, WebSocket cliente, tablero de juego |
-| `jira-pm` | Issues Jira, GitFlow, planificación |
-| `openapi-designer` | Documentación Swagger/OpenAPI |
-| `card-cache-sync` | Integración pokemontcg.io v2 |
-| `security-reviewer` | Auditoría RNF-05, DTOs seguros |
-| `deck-validator` | Validación de mazos, DeckBuilder |
-| `agent-builder` | Crear/mejorar agentes |
-
-Para usar Claude Code en el proyecto:
-```
-cd PokemonTCG
-claude
-```
+| `setup-runner` | Verificar y corregir la configuración del entorno local |
+| `pokemon-rules` | Reglamento XY1, mecánicas del juego, validación de lógica |
+| `backend-architect` | Spring Boot, Game Engine, patrones de diseño, WebSockets |
+| `db-designer` | Esquema PostgreSQL, migraciones Flyway, queries |
+| `test-coach` | JUnit, Mockito, JaCoCo, estrategia de cobertura |
+| `frontend-dev` | Angular, WebSocket cliente, tablero de juego, drag & drop |
+| `jira-pm` | Issues Jira, GitFlow, planificación del TPI |
+| `openapi-designer` | Documentación Swagger/OpenAPI (entregable obligatorio) |
+| `card-cache-sync` | Integración con pokemontcg.io v2, caché local XY1 |
+| `security-reviewer` | Auditoría RNF-05: DTOs seguros, validación en backend |
+| `deck-validator` | Validación de mazos (60 cartas, 4 copias, 1 AS TÁCTICO) |
+| `agent-builder` | Crear o mejorar agentes del proyecto |
 
 ---
 
@@ -257,4 +174,5 @@ Formato de branches: `feature/TCG-15-implement-damage-calculator`
 - **Repo:** https://github.com/113839EC/PokemonTCG
 - **Jira:** https://pokemontcg.atlassian.net
 - **API de cartas:** https://pokemontcg.io (set xy1, 146 cartas)
-- **Documentación Swagger** (cuando esté corriendo): http://localhost:8080/swagger-ui.html
+- **Swagger UI** (con la app corriendo): http://localhost:8080/swagger-ui.html
+- **JaCoCo** (después de `mvn verify`): `target/site/jacoco/index.html`
