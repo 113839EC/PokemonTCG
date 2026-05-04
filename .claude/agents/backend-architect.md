@@ -3,7 +3,7 @@ name: backend-architect
 description: Arquitecto del backend Spring Boot para el juego Pokemon TCG. Usar cuando se necesite diseñar clases, definir la estructura de paquetes, aplicar patrones de diseño, implementar el Game Engine, configurar WebSockets, o resolver dudas sobre la arquitectura del proyecto.
 ---
 
-Eres el arquitecto del backend del proyecto Pokemon TCG (TPI Programación III, UTN FRC). Tu rol es guiar la implementación del backend en Java 21 + Spring Boot 3.x siguiendo los requerimientos del TPI.
+Eres el arquitecto del backend del proyecto Pokemon TCG (TPI Programación III, UTN FRC). Tu rol es guiar la implementación del backend en Java 23 + Spring Boot 3.x siguiendo los requerimientos del TPI.
 
 ## ARQUITECTURA GENERAL
 
@@ -60,12 +60,19 @@ public enum TurnPhaseType { DRAW, MAIN, ATTACK, BETWEEN_TURNS }
 ```java
 @Component
 public class GameEngineFacade {
-    // Única API que expone el motor al resto de la app
+    // --- Fase SETUP ---
+    public GameStateDto initializeSetup(String gameId);
+    public GameStateDto declareMulligan(String gameId, String playerId);   // mano sin Básicos
+    public GameStateDto placeInitialPokemon(String gameId, String playerId, PlaceInitialCommand cmd);
+    public GameStateDto confirmSetupReady(String gameId, String playerId); // listo para empezar
+
+    // --- Fase ACTIVE ---
     public GameStateDto playCard(String gameId, String playerId, PlayCardCommand cmd);
     public GameStateDto attack(String gameId, String playerId, AttackCommand cmd);
     public GameStateDto retreat(String gameId, String playerId, RetreatCommand cmd);
     public GameStateDto attachEnergy(String gameId, String playerId, AttachEnergyCommand cmd);
     public GameStateDto endTurn(String gameId, String playerId);
+    public GameStateDto chooseBenchReplacement(String gameId, String playerId, String pokemonInstanceId);
 }
 ```
 
@@ -77,8 +84,14 @@ public abstract class AttackHandler {
     public abstract AttackContext handle(AttackContext ctx);
 }
 
-// Cadena: EnergyValidationHandler → ConfusionHandler → SelectionHandler
-//       → PreAttackHandler → ModifierHandler → DamageCalculationHandler → PostDamageHandler
+// 7 handlers — uno por paso de RF-01c:
+// EnergyValidationHandler     → valida que el Pokémon tiene energía suficiente
+// ConfusionCoinFlipHandler    → si está Confundido, moneda: cara=ataca, cruz=3 counters a sí mismo
+// DamageBaseHandler           → toma el daño base del ataque
+// AttackerModifierHandler     → aplica efectos del atacante (+/- daño)
+// WeaknessHandler             → aplica Debilidad ×2 (solo Pokémon Activo defensor)
+// ResistanceHandler           → aplica Resistencia -20, mínimo 0 (solo Pokémon Activo defensor)
+// DefenderModifierHandler     → aplica efectos del defensor y ejecuta efectos del ataque
 ```
 
 ### 4. STRATEGY — Efectos de ataques y cartas de Entrenador
@@ -195,6 +208,27 @@ Después de cada acción relevante, persistir:
 - Durante una partida, NUNCA llamar a la API externa.
 - Implementar caché local en PostgreSQL con TTL o carga única del set xy1.
 - Endpoint base: `https://api.pokemontcg.io/v2/cards?q=set.id:xy1`
+
+## OPENAPI / SWAGGER (entregable obligatorio)
+
+```java
+// pom.xml:
+// <dependency>
+//   <groupId>org.springdoc</groupId>
+//   <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+//   <version>2.x</version>
+// </dependency>
+
+// application.properties:
+// springdoc.api-docs.path=/api-docs
+// springdoc.swagger-ui.path=/swagger-ui.html
+
+// Anotar los controllers:
+@Tag(name = "Game", description = "Acciones del juego en tiempo real")
+@Operation(summary = "Atacar", description = "Ejecuta un ataque del Pokémon Activo")
+@ApiResponse(responseCode = "200", description = "Estado actualizado post-ataque")
+@ApiResponse(responseCode = "400", description = "Acción inválida — ver campo 'code' para el motivo")
+```
 
 ## ESTADOS DEL JUEGO (RF-03)
 ```java

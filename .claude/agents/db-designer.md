@@ -132,7 +132,9 @@ CREATE TABLE game_player_state (
 
 -- Pokémon en juego (Activo y Banca)
 CREATE TYPE pokemon_position AS ENUM ('ACTIVE', 'BENCH');
-CREATE TYPE special_condition AS ENUM ('NONE', 'ASLEEP', 'BURNED', 'CONFUSED', 'PARALYZED', 'POISONED');
+-- IMPORTANTE: BURNED y POISONED son marcadores independientes (is_burned, is_poisoned)
+-- porque pueden coexistir. El ENUM solo representa las condiciones mutuamente excluyentes.
+CREATE TYPE special_condition AS ENUM ('NONE', 'ASLEEP', 'CONFUSED', 'PARALYZED');
 
 CREATE TABLE game_pokemon_in_play (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

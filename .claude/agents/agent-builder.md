@@ -72,21 +72,16 @@ Todos en `C:\Users\emanu\IdeaProjects\Pokemon\.claude\agents\`
 | `test-coach` | JUnit, Mockito, JaCoCo, estrategia de testing | No para diseño de features nuevas |
 | `frontend-dev` | Angular 21+, WebSocket cliente, drag & drop, tablero | No para backend ni BD |
 | `jira-pm` | Issues Jira, backlog, GitFlow, épicas del TPI | No para implementación técnica |
+| `openapi-designer` | Swagger/OpenAPI, anotaciones @Tag/@Operation, entregable docs | No para lógica de negocio |
+| `card-cache-sync` | Integración pokemontcg.io v2, fetch XY1, mapeo JSON→entidad, caché strategy | No para reglas del juego ni validación del mazo |
+| `security-reviewer` | Auditoría RNF-05: DTOs WebSocket, mano oponente oculta, validación backend | No para implementar features |
+| `deck-validator` | Validación de mazos (60 cartas, 4 copias, 1 AS TÁCTICO), DeckBuilder REST | No para la API externa ni esquema SQL |
 | `agent-builder` | Crear/mejorar agentes (este mismo) | No para trabajo directo del proyecto |
 
 ## GAPS DETECTADOS — AGENTES QUE PODRÍAN CREARSE
 
-### `card-cache-sync` (recomendado)
-Para gestionar la sincronización con pokemontcg.io v2: fetching del set xy1, mapeo del JSON de la API al modelo interno, estrategia de caché, manejo de errores de red.
-
 ### `gitflow-guide` (recomendado)
-Para guiar el workflow GitFlow del equipo: cuándo crear qué tipo de branch, formato de commit messages, proceso de PR, merge strategy.
-
-### `security-reviewer` (opcional)
-Para revisar que el código cumpla RNF-05: mano del oponente nunca expuesta, orden del mazo oculto, validaciones solo en backend, etc.
-
-### `deck-validator` (opcional)
-Para la lógica específica del Deck Builder: validaciones de mazo (60 cartas, máx 4 copias, 1 AS TÁCTICO, al menos 1 Básico), integración con la API.
+Para guiar el workflow GitFlow del equipo: cuándo crear qué tipo de branch, formato de commit messages, proceso de PR, merge strategy. El `jira-pm` tiene algo de GitFlow pero no es el foco.
 
 ## PROCESO PARA CREAR UN NUEVO AGENTE
 
@@ -126,7 +121,7 @@ Cuando te consulten sobre [dominio]:
 ## CONTEXTO GLOBAL DEL PROYECTO (para agentes nuevos que lo necesiten)
 
 **Proyecto:** Pokemon TCG digital completo — TPI Programación III UTN FRC Córdoba.
-**Stack:** Java 21 + Spring Boot 3.x | Angular 21+ | PostgreSQL | WebSockets (STOMP/SockJS) | Maven | JUnit + Mockito + JaCoCo.
+**Stack:** Java 23 + Spring Boot 3.x | Angular 21+ | PostgreSQL | WebSockets (STOMP/SockJS) | Maven | JUnit + Mockito + JaCoCo.
 **Repo:** https://github.com/113839EC/PokemonTCG — GitFlow workflow.
 **Integraciones:** Jira (pokemontcg.atlassian.net) | PostgreSQL local (pokemon_tcg) | JetBrains MCP | GitHub MCP.
 **Reglas base:** XY1 Rulebook (set xy1, 146 cartas).

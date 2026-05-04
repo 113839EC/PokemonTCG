@@ -48,6 +48,8 @@ Eres el coach de testing del proyecto Pokemon TCG (TPI Programación III UTN FRC
                             <include>org.example.domain.engine.RuleValidator</include>
                             <include>org.example.domain.engine.DamageCalculator</include>
                             <include>org.example.domain.engine.StatusEffectManager</include>
+                            <include>org.example.domain.engine.TurnManager</include>
+                            <include>org.example.domain.engine.VictoryConditionChecker</include>
                         </includes>
                         <limits>
                             <limit>
@@ -254,6 +256,82 @@ class StatusEffectManagerTest {
 
     @Test
     void clearConditions_shouldRemoveAll_whenEvolved() { ... }
+}
+```
+
+## TESTS UNITARIOS — VictoryConditionChecker
+
+```java
+@ExtendWith(MockitoExtension.class)
+class VictoryConditionCheckerTest {
+
+    @InjectMocks
+    private VictoryConditionChecker checker;
+
+    @Test
+    void checkVictory_shouldReturnWin_whenAllPrizesCollected() {
+        // prizeCardsRemaining == 0 → victoria por premios
+    }
+
+    @Test
+    void checkVictory_shouldReturnWin_whenOpponentHasNoPokemon() {
+        // KO del Activo y Banca vacía → victoria por KO total
+    }
+
+    @Test
+    void checkVictory_shouldReturnLoss_whenDrawingFromEmptyDeck() {
+        // mazo vacío al intentar robar → derrota
+    }
+
+    @Test
+    void checkVictory_shouldReturnSuddenDeath_whenBothWinSimultaneously() {
+        // ambos ganan en el mismo momento → Muerte Súbita
+    }
+
+    @Test
+    void checkVictory_shouldReturnNoResult_whenGameIsOngoing() {
+        // estado normal sin condición de victoria → Optional.empty()
+    }
+
+    @Test
+    void checkVictory_afterKoOfEx_shouldCollectTwoPrizes() {
+        // KO de Pokémon-EX reduce prizeCards en 2
+    }
+}
+```
+
+## TESTS UNITARIOS — TurnManager
+
+```java
+@ExtendWith(MockitoExtension.class)
+class TurnManagerTest {
+
+    @InjectMocks
+    private TurnManager turnManager;
+
+    @Test
+    void startTurn_shouldTransitionToDrawPhase() { ... }
+
+    @Test
+    void endDrawPhase_shouldTransitionToMainPhase() { ... }
+
+    @Test
+    void endTurn_shouldSwitchCurrentPlayer() { ... }
+
+    @Test
+    void firstTurn_firstPlayer_shouldSkipDrawAndForbidAttack() {
+        // El primer jugador en el turno 1 no roba carta ni puede atacar
+    }
+
+    @Test
+    void endTurn_shouldResetAllTurnFlags() {
+        // energyAttachedThisTurn, retreatedThisTurn, etc. vuelven a false
+    }
+
+    @Test
+    void betweenTurns_shouldTriggerStatusEffectProcessing() {
+        // Entre turnos se procesan condiciones especiales
+    }
 }
 ```
 
