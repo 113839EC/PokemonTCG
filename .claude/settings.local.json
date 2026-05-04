@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "mcp__jira__create_jira_issue"
+    ]
+  },
+  "enableAllProjectMcpServers": true
+}

@@ -1,0 +1,3 @@
+USERPATH_OK=True
+CLAUDE_SOURCE=C:\Users\emanu\.local\bin\claude.exe
+PROC_PATH_CONTAINS=True
