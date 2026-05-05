@@ -5,10 +5,7 @@ target/
 .kotlin
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -38,5 +35,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-### Claude MCP (contiene credenciales) ###
+### Claude Code — configuración local ###
 .mcp.json
+.claude/settings.local.json
